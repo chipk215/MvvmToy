@@ -1,10 +1,14 @@
-package com.keyeswest.mvvmtoy.db;
+package com.keyeswest.mvvmtoy.db.entity;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
+import com.keyeswest.mvvmtoy.R;
+import com.keyeswest.mvvmtoy.model.Trip;
+import com.keyeswest.mvvmtoy.utilities.PluralHelpers;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -12,7 +16,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Entity(tableName="trip")
-public class TripEntity {
+public class TripEntity implements Trip {
 
     @PrimaryKey
     @NonNull
@@ -42,6 +46,7 @@ public class TripEntity {
     @SerializedName("Duration")
     private long duration ;
 
+    public TripEntity(){}
 
     public TripEntity(UUID id, long timeStamp, boolean favorite, double minLatitude,
                          double maxLatitude, double minLongitude, double maxLongitude,
@@ -62,15 +67,16 @@ public class TripEntity {
     }
 
     public void setDistance(Double distance) {
-        distance = distance;
+        this.distance = distance;
     }
 
+    @Override
     public UUID getId() {
         return id;
     }
 
     public void setId(UUID id) {
-        id = id;
+        this.id = id;
     }
 
     public long getTimeStamp() {
@@ -78,7 +84,7 @@ public class TripEntity {
     }
 
     public void setTimeStamp(long timeStamp) {
-        timeStamp = timeStamp;
+        this.timeStamp = timeStamp;
     }
 
     public boolean isFavorite() {
@@ -86,61 +92,69 @@ public class TripEntity {
     }
 
     public void setFavorite(boolean favorite) {
-        favorite = favorite;
+        this.favorite = favorite;
     }
 
+    @Override
     public Double getMinLatitude() {
         return minLatitude;
     }
 
     public void setMinLatitude(Double minLatitude) {
-        minLatitude = minLatitude;
+        this.minLatitude = minLatitude;
     }
 
+    @Override
     public Double getMaxLatitude() {
         return maxLatitude;
     }
 
     public void setMaxLatitude(Double maxLatitude) {
-        maxLatitude = maxLatitude;
+        this.maxLatitude = maxLatitude;
     }
 
+    @Override
     public Double getMinLongitude() {
         return minLongitude;
     }
 
     public void setMinLongitude(Double minLongitude) {
-        minLongitude = minLongitude;
+        this.minLongitude = minLongitude;
     }
 
+    @Override
     public Double getMaxLongitude() {
         return maxLongitude;
     }
 
     public void setMaxLongitude(Double maxLongitude) {
-        maxLongitude = maxLongitude;
+        this.maxLongitude = maxLongitude;
     }
 
-    public long getElapsedTime() {
+    @Override
+    public long getDuration() {
         return duration;
     }
 
-    public void setElapsedTime(long elapsedTime) {
+    public void setDuration(long elapsedTime) {
         duration = elapsedTime;
     }
 
+    @Override
     public String getDate(){
         Date date = new Date(timeStamp * 1000);
         return DateFormat.getDateInstance(DateFormat.SHORT).format(date);
 
     }
 
+    @Override
     public String getTime(){
         Date date = new Date(timeStamp * 1000);
         return DateFormat.getTimeInstance(DateFormat.SHORT).format(date);
 
     }
 
+    @Override
     public String getDistanceMiles(){
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         double METERS_TO_MILES = 0.000621371;
@@ -165,6 +179,12 @@ public class TripEntity {
 
         return id.equals(segment.getId());
 
+    }
+
+    @Override
+    public String getMileOrMiles(Context context){
+        return context.getResources().getQuantityString(R.plurals.miles_plural,
+                PluralHelpers.getPluralQuantity(getDistance()));
 
     }
 }

@@ -2,4 +2,29 @@
     <string name="app_name">MvvmToy</string>
     <string name="loading_trips">Loading trips…</string>
     <string name="cd_trips_list">Trips list</string>
+
+    <string name="delete">delete</string>
+    <string name="favorite">favorite</string>
+    <string name="distance">Distance: </string>
+
+    <plurals name="seconds_plural">
+        <item quantity="one">second</item>
+        <item quantity="other">seconds</item>
+    </plurals>
+
+    <plurals name="minutes_plural">
+        <item quantity="one">minute</item>
+        <item quantity="other">minutes</item>
+    </plurals>
+
+    <plurals name="hours_plural">
+        <item quantity="one">hour</item>
+        <item quantity="other">hours</item>
+    </plurals>
+
+    <plurals name="miles_plural">
+        <item quantity="one">mile</item>
+        <item quantity="other">miles</item>
+    </plurals>
+
 </resources>

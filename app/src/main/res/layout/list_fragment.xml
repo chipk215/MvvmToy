@@ -24,11 +24,10 @@
             app:visibleGone="@{isLoading}"/>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/products_list"
+            android:id="@+id/trips_list"
             android:contentDescription="@string/cd_trips_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layoutManager="LinearLayoutManager"
             app:visibleGone="@{!isLoading}"/>
 
     </LinearLayout>

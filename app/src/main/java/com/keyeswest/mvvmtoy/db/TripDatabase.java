@@ -11,8 +11,11 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.keyeswest.mvvmtoy.AppExecutors;
+import com.keyeswest.mvvmtoy.db.converter.UUIDConverter;
 import com.keyeswest.mvvmtoy.db.dao.TripDao;
+import com.keyeswest.mvvmtoy.db.entity.TripEntity;
 
+import java.util.List;
 
 
 @Database(entities = {TripEntity.class}, version =1, exportSchema = false)
@@ -58,11 +61,9 @@ public abstract class TripDatabase  extends RoomDatabase {
                             // Generate the data for pre-population
                             TripDatabase database = TripDatabase.getInstance(appContext, executors);
 
-                            //List<ProductEntity> products = DataGenerator.generateProducts();
-                            //List<CommentEntity> comments =
-                             //       DataGenerator.generateCommentsForProducts(products);
+                            List<TripEntity> trips = DataGenerator.generateTrips();
 
-                            //insertData(database, products, comments);
+                            insertData(database, trips);
                             // notify that the database was created and it's ready to be used
                             database.setDatabaseCreated();
                         });
@@ -83,15 +84,13 @@ public abstract class TripDatabase  extends RoomDatabase {
         mIsDatabaseCreated.postValue(true);
     }
 
-    /*
-    private static void insertData(final TripDatabase database, final List<ProductEntity> products,
-                                   final List<CommentEntity> comments) {
+
+    private static void insertData(final TripDatabase database, final List<TripEntity> trips){
         database.runInTransaction(() -> {
-            database.productDao().insertAll(products);
-            database.commentDao().insertAll(comments);
+            database.tripDao().insertAll(trips);
         });
     }
-    */
+
 
 
 

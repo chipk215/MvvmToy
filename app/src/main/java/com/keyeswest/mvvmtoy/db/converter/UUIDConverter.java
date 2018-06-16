@@ -1,4 +1,4 @@
-package com.keyeswest.mvvmtoy.db;
+package com.keyeswest.mvvmtoy.db.converter;
 
 import android.arch.persistence.room.TypeConverter;
 

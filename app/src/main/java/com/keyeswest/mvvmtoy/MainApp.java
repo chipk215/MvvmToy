@@ -13,6 +13,8 @@ public class MainApp extends Application {
     public void onCreate() {
         super.onCreate();
 
+        mAppExecutors = new AppExecutors();
+
         Timber.plant(new Timber.DebugTree() {
             // include line numbers
             @Override
@@ -27,4 +29,7 @@ public class MainApp extends Application {
     }
 
 
+    public DataRepository getRepository() {
+        return DataRepository.getInstance(getDatabase());
+    }
 }

@@ -8,7 +8,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.keyeswest.mvvmtoy.db.TripEntity;
+import com.keyeswest.mvvmtoy.db.entity.TripEntity;
 
 import java.util.List;
 
