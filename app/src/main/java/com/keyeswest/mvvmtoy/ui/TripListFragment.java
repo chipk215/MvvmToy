@@ -21,6 +21,7 @@ import com.keyeswest.mvvmtoy.databinding.ListFragmentBinding;
 import android.databinding.DataBindingUtil;
 
 import com.keyeswest.mvvmtoy.R;
+import com.keyeswest.mvvmtoy.db.DataGenerator;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
 import com.keyeswest.mvvmtoy.model.Trip;
 import com.keyeswest.mvvmtoy.viewmodel.TripListViewModel;
@@ -56,6 +57,8 @@ public class TripListFragment extends Fragment {
 
         mBinding.tripsList.addItemDecoration(itemDecorator);
         mBinding.tripsList.setAdapter(mTripListAdapter);
+
+        mBinding.fab.setOnClickListener(fabListener);
 
         return mBinding.getRoot();
 
@@ -118,6 +121,23 @@ public class TripListFragment extends Fragment {
 
         }
     };
+
+
+    private View.OnClickListener fabListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Timber.d("Fab clicked insert random trip");
+            List<TripEntity> trips = DataGenerator.generateTrips(1);
+          //  ((MainApp) Objects.requireNonNull(getContext())
+           //         .getApplicationContext()).getRepository().insert(trips.get(0));
+
+            ((MainApp) Objects.requireNonNull(getActivity()).getApplication())
+                    .getRepository().insert(trips.get(0));
+
+        }
+    };
+
+
 
 
 }

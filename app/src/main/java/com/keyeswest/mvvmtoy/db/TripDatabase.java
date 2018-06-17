@@ -22,6 +22,8 @@ import java.util.List;
 @TypeConverters(UUIDConverter.class)
 public abstract class TripDatabase  extends RoomDatabase {
 
+    private static final int NUMBER_SEED_RECORDS = 5;
+
     private static TripDatabase sInstance;
 
     private static final String DATABASE_NAME = "trip-database";
@@ -61,7 +63,7 @@ public abstract class TripDatabase  extends RoomDatabase {
                             // Generate the data for pre-population
                             TripDatabase database = TripDatabase.getInstance(appContext, executors);
 
-                            List<TripEntity> trips = DataGenerator.generateTrips();
+                            List<TripEntity> trips = DataGenerator.generateTrips(NUMBER_SEED_RECORDS);
 
                             insertData(database, trips);
                             // notify that the database was created and it's ready to be used
