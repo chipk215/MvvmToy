@@ -50,6 +50,9 @@ public class DataRepository {
 
     public void insert(TripEntity trip){ new insertAsyncTask(mDatabase.tripDao()).execute(trip);}
 
+    public void update(TripEntity trip){ new updateAsyncTask(mDatabase.tripDao()).execute(trip);}
+
+
 
     private static class deleteAsyncTask extends AsyncTask<TripEntity, Void, Void>{
         private TripDao mAsyncTaskDao;
@@ -80,6 +83,22 @@ public class DataRepository {
         protected Void doInBackground(TripEntity... tripEntities) {
 
             mAsyncTaskDao.insert(tripEntities[0]);
+            return null;
+        }
+    }
+
+    private static class updateAsyncTask extends AsyncTask<TripEntity, Void, Void>{
+        private TripDao mAsyncTaskDao;
+
+        updateAsyncTask(TripDao dao){
+            mAsyncTaskDao = dao;
+        }
+
+
+        @Override
+        protected Void doInBackground(TripEntity... tripEntities) {
+
+            mAsyncTaskDao.update(tripEntities[0]);
             return null;
         }
     }

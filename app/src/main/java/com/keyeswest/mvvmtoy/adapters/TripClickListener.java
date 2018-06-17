@@ -11,5 +11,5 @@ public interface TripClickListener {
 
     void onDeleteClick(TripEntity trip);
 
-    void onFavoriteClick(TripEntity trip, boolean selected);
+    void onFavoriteClick(TripEntity trip);
 }

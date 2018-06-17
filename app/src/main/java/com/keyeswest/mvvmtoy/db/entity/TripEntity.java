@@ -17,6 +17,8 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import timber.log.Timber;
+
 @Entity(tableName="trip")
 public class TripEntity implements Trip {
 
@@ -49,6 +51,18 @@ public class TripEntity implements Trip {
     private long duration ;
 
     public TripEntity(){}
+
+    public TripEntity(TripEntity trip){
+        id = UUID.fromString(trip.id.toString());
+        timeStamp = trip.timeStamp;
+        favorite = trip.favorite;
+        minLatitude = trip.minLatitude;
+        maxLatitude = trip.maxLatitude;
+        minLongitude = trip.minLongitude;
+        maxLongitude = trip.maxLongitude;
+        distance = trip.distance;
+        duration = trip.duration;
+    }
 
     public TripEntity(UUID id, long timeStamp, boolean favorite, double minLatitude,
                          double maxLatitude, double minLongitude, double maxLongitude,
@@ -193,8 +207,15 @@ public class TripEntity implements Trip {
     @Override
     public Drawable getFavoriteImage(Context context){
 
-        return favorite ? ContextCompat.getDrawable(context,R.drawable.fav_star_filled)
-                : ContextCompat.getDrawable(context,R.drawable.fav_star_border);
+        Timber.d("Get Favorite Image");
+        if (favorite){
+            Timber.d("Returning favorite filled");
+            return ContextCompat.getDrawable(context,R.drawable.fav_star_filled);
+        }else{
+            Timber.d("Returning (non)favorite border");
+            return ContextCompat.getDrawable(context,R.drawable.fav_star_border);
+        }
+
 
     }
 }

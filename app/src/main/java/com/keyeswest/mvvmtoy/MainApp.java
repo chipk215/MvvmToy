@@ -2,6 +2,7 @@ package com.keyeswest.mvvmtoy;
 
 import android.app.Application;
 
+import com.facebook.stetho.Stetho;
 import com.keyeswest.mvvmtoy.db.TripDatabase;
 
 import timber.log.Timber;
@@ -22,6 +23,8 @@ public class MainApp extends Application {
                 return super.createStackElementTag(element) + ':' + element.getLineNumber();
             }
         });
+
+        Stetho.initializeWithDefaults(this);
     }
 
     public TripDatabase getDatabase() {

@@ -117,7 +117,17 @@ public class TripListFragment extends Fragment {
         }
 
         @Override
-        public void onFavoriteClick(TripEntity trip, boolean selected) {
+        public void onFavoriteClick(TripEntity trip) {
+            // flip the favorite status
+            Timber.d("Favorite clicked");
+            Timber.d("Current status %s", Boolean.toString(trip.isFavorite()));
+            trip.setFavorite(! trip.isFavorite());
+            Timber.d("New status %s", Boolean.toString(trip.isFavorite()));
+
+            //update database which will update view
+            ((MainApp) Objects.requireNonNull(getContext())
+                    .getApplicationContext()).getRepository().update(trip);
+
 
         }
     };

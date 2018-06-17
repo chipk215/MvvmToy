@@ -16,14 +16,19 @@ import com.keyeswest.mvvmtoy.db.entity.TripEntity;
 import com.keyeswest.mvvmtoy.model.Trip;
 import com.keyeswest.mvvmtoy.utilities.MathHelper;
 
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import timber.log.Timber;
+
 
 public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripViewHolder> {
 
     private final static int MAX_SELECTED_TRIPS = 4;
 
-    List< TripEntity> mTripList;
+    List<TripEntity> mTripList;
 
     private Context mContext;
     private TripClickListener mTripClickListener;
@@ -69,11 +74,23 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
         return  mTripList == null ? 0 : mTripList.size();
     }
 
+    private List<TripEntity> deepCopyList(List<TripEntity> original){
+        List<TripEntity> copyList = new ArrayList<>();
+        for (TripEntity trip : original){
+           TripEntity newTrip = new TripEntity(trip);
+            copyList.add(newTrip);
+        }
+
+        return copyList;
+    }
+
     public void setTripList(final List< TripEntity> tripList){
         if (mTripList == null){
-            mTripList = tripList;
+            mTripList = deepCopyList(tripList);  // copy by reference need to copy by value
             notifyItemRangeInserted(0, tripList.size());
         }else{
+
+            /*
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override
                 public int getOldListSize() {
@@ -93,9 +110,10 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    Timber.d("Are contents same invoked");
                     Trip newTrip = tripList.get(newItemPosition);
                     Trip oldTrip = mTripList.get(oldItemPosition);
-                    return  Objects.equals(newTrip.getId(), oldTrip.getId()) &&
+                    boolean areSame = Objects.equals(newTrip.getId(), oldTrip.getId()) &&
                             Objects.equals(newTrip.getTime(), oldTrip.getTime()) &&
                             Objects.equals(newTrip.getDate(), oldTrip.getDate()) &&
                             Objects.equals(newTrip.getDistanceMiles(),
@@ -108,14 +126,21 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
                                     oldTrip.getMinLongitude()) &&
                             MathHelper.areSame(newTrip.getMaxLongitude(),
                                     oldTrip.getMaxLongitude()) &&
-                            newTrip.isFavorite() == oldTrip.isFavorite() &&
-                            newTrip.getDuration() == oldTrip.getDuration();
+                            (newTrip.isFavorite() == oldTrip.isFavorite()) &&
+                            (newTrip.getDuration() == oldTrip.getDuration());
 
+                    Timber.d("Are same = %s", Boolean.toString(areSame));
+                    return areSame;
                 }
             });
 
+         */
+
+           // mTripList = deepCopyList(tripList);
             mTripList = tripList;
-            result.dispatchUpdatesTo(this);
+            notifyDataSetChanged();
+
+            //result.dispatchUpdatesTo(this);
         }
 
     }
@@ -128,10 +153,15 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
             super(binding.getRoot());
             this.binding = binding;
 
-            binding.deleteBtn.setOnClickListener(new View.OnClickListener() {
+            binding.deleteBtn.setOnClickListener(v -> {
+                mTripClickListener.onDeleteClick(binding.getTrip());
+            });
+
+            binding.favBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mTripClickListener.onDeleteClick(binding.getTrip());
+                    TripEntity trip = binding.getTrip();
+                    mTripClickListener.onFavoriteClick(trip);
                 }
             });
         }
