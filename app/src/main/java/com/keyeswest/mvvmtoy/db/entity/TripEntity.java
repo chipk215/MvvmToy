@@ -3,7 +3,9 @@ package com.keyeswest.mvvmtoy.db.entity;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 
 import com.google.gson.annotations.SerializedName;
 import com.keyeswest.mvvmtoy.R;
@@ -185,6 +187,14 @@ public class TripEntity implements Trip {
     public String getMileOrMiles(Context context){
         return context.getResources().getQuantityString(R.plurals.miles_plural,
                 PluralHelpers.getPluralQuantity(getDistance()));
+
+    }
+
+    @Override
+    public Drawable getFavoriteImage(Context context){
+
+        return favorite ? ContextCompat.getDrawable(context,R.drawable.fav_star_filled)
+                : ContextCompat.getDrawable(context,R.drawable.fav_star_border);
 
     }
 }

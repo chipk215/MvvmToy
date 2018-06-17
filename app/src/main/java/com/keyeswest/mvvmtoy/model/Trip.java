@@ -1,6 +1,7 @@
 package com.keyeswest.mvvmtoy.model;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import java.util.UUID;
 
@@ -20,6 +21,8 @@ public interface Trip {
 
     boolean isFavorite();
     long getDuration();
+
+    Drawable getFavoriteImage(Context context);
 
 
 

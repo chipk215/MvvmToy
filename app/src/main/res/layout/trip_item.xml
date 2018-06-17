@@ -3,7 +3,7 @@
 
     <data>
         <variable name="trip"
-            type = "com.keyeswest.mvvmtoy.model.Trip"/>
+            type = "com.keyeswest.mvvmtoy.db.entity.TripEntity"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -92,7 +92,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/fav_star_border" />
+            android:src="@{trip.getFavoriteImage(context)}"
+            android:tag="@{trip.isFavorite()}"/>
 
         <TextView
             android:id="@+id/dist_label"

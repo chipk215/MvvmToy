@@ -2,6 +2,7 @@ package com.keyeswest.mvvmtoy.ui;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.keyeswest.mvvmtoy.MainApp;
+import com.keyeswest.mvvmtoy.adapters.TripClickListener;
 import com.keyeswest.mvvmtoy.adapters.TripListAdapter;
 import com.keyeswest.mvvmtoy.databinding.ListFragmentBinding;
 
@@ -19,16 +22,20 @@ import android.databinding.DataBindingUtil;
 
 import com.keyeswest.mvvmtoy.R;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
+import com.keyeswest.mvvmtoy.model.Trip;
 import com.keyeswest.mvvmtoy.viewmodel.TripListViewModel;
 
 import java.util.List;
 import java.util.Objects;
+
+import timber.log.Timber;
 
 public class TripListFragment extends Fragment {
     public static final String TAG = "TripListFragment";
 
     private ListFragmentBinding mBinding;
     private TripListAdapter mTripListAdapter;
+
 
     @Nullable
     @Override
@@ -40,28 +47,7 @@ public class TripListFragment extends Fragment {
 
         mBinding.tripsList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mTripListAdapter = new TripListAdapter(getContext(), null,
-                new TripListAdapter.TripClickListener() {
-            @Override
-            public void onItemChecked(TripEntity segment) {
-
-            }
-
-            @Override
-            public void onItemUnchecked(TripEntity segment) {
-
-            }
-
-            @Override
-            public void onDeleteClick(TripEntity segment) {
-
-            }
-
-            @Override
-            public void onFavoriteClick(TripEntity segment, boolean selected) {
-
-            }
-        });
+        mTripListAdapter = new TripListAdapter(getContext(), null,  mTripClickListener);
 
         DividerItemDecoration itemDecorator = new DividerItemDecoration(Objects
                 .requireNonNull(getActivity()), DividerItemDecoration.VERTICAL);
@@ -91,6 +77,7 @@ public class TripListFragment extends Fragment {
             @Override
             public void onChanged(@Nullable List<TripEntity> trips) {
                 if (trips != null) {
+                    Timber.d("onChanged Executed");
                     mBinding.setIsLoading(false);
                     mTripListAdapter.setTripList(trips);
                 } else {
@@ -102,6 +89,35 @@ public class TripListFragment extends Fragment {
             }
         });
     }
+
+
+    private final TripClickListener mTripClickListener = new TripClickListener() {
+        @Override
+        public void onItemChecked(TripEntity trip) {
+
+        }
+
+        @Override
+        public void onItemUnchecked(TripEntity trip) {
+
+        }
+
+        @Override
+        public void onDeleteClick(TripEntity trip) {
+            Timber.d("on delete clicked");
+            Timber.d("Trip distance= %s", trip.getDistanceMiles());
+
+            ((MainApp) Objects.requireNonNull(getContext())
+                    .getApplicationContext()).getRepository().delete(trip);
+
+
+        }
+
+        @Override
+        public void onFavoriteClick(TripEntity trip, boolean selected) {
+
+        }
+    };
 
 
 }

@@ -29,7 +29,7 @@ public class DataGenerator {
             TripEntity trip = new TripEntity();
             trip.setId(UUID.randomUUID());
             trip.setTimeStamp(ThreadLocalRandom.current().nextLong(past, now));
-            trip.setFavorite(false);
+            trip.setFavorite((i % 2)==0);
             trip.setMinLatitude(MIN_LAT + increment);
             trip.setMaxLatitude(MAX_LAT + increment);
             trip.setMinLongitude(MIN_LON + increment);

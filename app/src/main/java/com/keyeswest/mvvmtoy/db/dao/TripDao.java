@@ -9,6 +9,7 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
+import com.keyeswest.mvvmtoy.model.Trip;
 
 import java.util.List;
 

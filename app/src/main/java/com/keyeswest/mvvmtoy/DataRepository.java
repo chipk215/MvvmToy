@@ -2,8 +2,10 @@ package com.keyeswest.mvvmtoy;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.os.AsyncTask;
 
 import com.keyeswest.mvvmtoy.db.TripDatabase;
+import com.keyeswest.mvvmtoy.db.dao.TripDao;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
 
 import java.util.List;
@@ -40,5 +42,26 @@ public class DataRepository {
 
     public LiveData<List<TripEntity>> getTrips() {
         return mObservableTrips;
+    }
+
+    public void delete(TripEntity trip){
+        new deleteAsyncTask(mDatabase.tripDao()).execute(trip);
+    }
+
+
+    private static class deleteAsyncTask extends AsyncTask<TripEntity, Void, Void>{
+        private TripDao mAsyncTaskDao;
+
+        deleteAsyncTask(TripDao dao){
+            mAsyncTaskDao = dao;
+        }
+
+
+        @Override
+        protected Void doInBackground(TripEntity... tripEntities) {
+
+            mAsyncTaskDao.delete(tripEntities[0]);
+            return null;
+        }
     }
 }
