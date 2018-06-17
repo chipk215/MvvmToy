@@ -6,16 +6,13 @@ import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.keyeswest.mvvmtoy.R;
 import com.keyeswest.mvvmtoy.databinding.TripItemBinding;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
-import com.keyeswest.mvvmtoy.model.Trip;
 import com.keyeswest.mvvmtoy.utilities.MathHelper;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +33,13 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
     private boolean mSelectionsFrozen;
 
     public TripListAdapter(Context context, List<TripEntity> selectedTrips,
-                           TripClickListener listener){
+                           TripClickListener listener) {
         mContext = context;
         mTripClickListener = listener;
         mInitialSelectedTrips = selectedTrips;
-        if ( (selectedTrips == null) || (selectedTrips.size() <  MAX_SELECTED_TRIPS)){
+        if ((selectedTrips == null) || (selectedTrips.size() < MAX_SELECTED_TRIPS)) {
             mSelectionsFrozen = false;
-        }else{
+        } else {
             mSelectionsFrozen = true;
         }
     }
@@ -68,27 +65,26 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
 
     @Override
     public int getItemCount() {
-        return  mTripList == null ? 0 : mTripList.size();
+        return mTripList == null ? 0 : mTripList.size();
     }
 
 
     // Experimenting with copy
-    private List<TripEntity> deepCopyList(List<TripEntity> original){
+    private List<TripEntity> deepCopyList(List<TripEntity> original) {
         List<TripEntity> copyList = new ArrayList<>();
-        for (TripEntity trip : original){
-           TripEntity newTrip = new TripEntity(trip);
+        for (TripEntity trip : original) {
+            TripEntity newTrip = new TripEntity(trip);
             copyList.add(newTrip);
         }
         return copyList;
     }
 
-    public void setTripList(final List< TripEntity> tripList){
-        if (mTripList == null){
+    public void setTripList(final List<TripEntity> tripList) {
+        if (mTripList == null) {
             //mTripList = tripList; // copy by reference?
             mTripList = deepCopyList(tripList);
             notifyItemRangeInserted(0, tripList.size());
-        }else{
-
+        } else {
 
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override
@@ -125,7 +121,28 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
 
     }
 
-    public class TripViewHolder extends RecyclerView.ViewHolder{
+    private boolean areSameCheck(TripEntity newTrip, TripEntity oldTrip) {
+        boolean areSame = Objects.equals(newTrip.getId(), oldTrip.getId()) &&
+                Objects.equals(newTrip.getTime(), oldTrip.getTime()) &&
+                Objects.equals(newTrip.getDate(), oldTrip.getDate()) &&
+                Objects.equals(newTrip.getDistanceMiles(),
+                        oldTrip.getDistanceMiles()) &&
+                MathHelper.areSame(newTrip.getMaxLatitude(),
+                        oldTrip.getMaxLatitude()) &&
+                MathHelper.areSame(newTrip.getMinLatitude(),
+                        oldTrip.getMinLatitude()) &&
+                MathHelper.areSame(newTrip.getMinLongitude(),
+                        oldTrip.getMinLongitude()) &&
+                MathHelper.areSame(newTrip.getMaxLongitude(),
+                        oldTrip.getMaxLongitude()) &&
+                (newTrip.isFavorite() == oldTrip.isFavorite()) &&
+                (newTrip.getDuration() == oldTrip.getDuration());
+
+        Timber.d("Are same = %s", Boolean.toString(areSame));
+        return areSame;
+    }
+
+    public class TripViewHolder extends RecyclerView.ViewHolder {
 
         final TripItemBinding binding;
 
@@ -145,27 +162,5 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
                 }
             });
         }
-    }
-
-
-    private boolean areSameCheck(TripEntity newTrip, TripEntity oldTrip){
-        boolean areSame = Objects.equals(newTrip.getId(), oldTrip.getId()) &&
-                Objects.equals(newTrip.getTime(), oldTrip.getTime()) &&
-                Objects.equals(newTrip.getDate(), oldTrip.getDate()) &&
-                Objects.equals(newTrip.getDistanceMiles(),
-                        oldTrip.getDistanceMiles()) &&
-                MathHelper.areSame(newTrip.getMaxLatitude(),
-                        oldTrip.getMaxLatitude()) &&
-                MathHelper.areSame(newTrip.getMinLatitude(),
-                        oldTrip.getMinLatitude()) &&
-                MathHelper.areSame(newTrip.getMinLongitude(),
-                        oldTrip.getMinLongitude()) &&
-                MathHelper.areSame(newTrip.getMaxLongitude(),
-                        oldTrip.getMaxLongitude()) &&
-                (newTrip.isFavorite() == oldTrip.isFavorite()) &&
-                (newTrip.getDuration() == oldTrip.getDuration());
-
-        Timber.d("Are same = %s", Boolean.toString(areSame));
-        return areSame;
     }
 }
