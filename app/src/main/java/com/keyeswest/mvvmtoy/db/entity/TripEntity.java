@@ -1,6 +1,7 @@
 package com.keyeswest.mvvmtoy.db.entity;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -50,6 +51,9 @@ public class TripEntity implements Trip {
     @SerializedName("Duration")
     private long duration ;
 
+    @Ignore
+    private transient boolean mSelected;
+
     public TripEntity(){}
 
     public TripEntity(TripEntity trip){
@@ -62,6 +66,7 @@ public class TripEntity implements Trip {
         maxLongitude = trip.maxLongitude;
         distance = trip.distance;
         duration = trip.duration;
+        mSelected = trip.mSelected;
     }
 
     public TripEntity(UUID id, long timeStamp, boolean favorite, double minLatitude,
@@ -76,6 +81,7 @@ public class TripEntity implements Trip {
         this.maxLongitude = maxLongitude;
         this.distance = distance;
         duration = elapsedTime;
+        mSelected = false;
     }
 
     public Double getDistance() {
@@ -217,5 +223,13 @@ public class TripEntity implements Trip {
         }
 
 
+    }
+
+    public boolean isSelected(){
+        return mSelected;
+    }
+
+    public void setSelected(boolean selectState){
+        mSelected = selectState;
     }
 }

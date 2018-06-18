@@ -4,6 +4,7 @@
     <data>
         <variable name="trip"
             type = "com.keyeswest.mvvmtoy.db.entity.TripEntity"/>
+
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -52,6 +53,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_8"
             android:layout_marginTop="@dimen/margin_8"
+            android:clickable="false"
+            android:checked="@{trip.isSelected()}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

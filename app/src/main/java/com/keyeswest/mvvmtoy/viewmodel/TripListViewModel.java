@@ -14,7 +14,12 @@ import java.util.List;
 
 public class TripListViewModel extends AndroidViewModel {
 
+
+    private static final int MAX_TRIPS_SELECTABLE = 4;
+
     private final MediatorLiveData<List<TripEntity>> mObservableTrips;
+
+    private int mTripsSelected;
 
     public TripListViewModel(@NonNull Application application) {
         super(application);
@@ -28,6 +33,8 @@ public class TripListViewModel extends AndroidViewModel {
 
         // observe the changes of trips from the database and forward them
         mObservableTrips.addSource(trips, mObservableTrips::setValue);
+
+        mTripsSelected = 0;
     }
 
     /**
@@ -36,6 +43,28 @@ public class TripListViewModel extends AndroidViewModel {
     public LiveData<List<TripEntity>> getTrips() {
         return mObservableTrips;
     }
+
+
+
+    public void handleTripSelected(TripEntity trip){
+
+        if (trip.isSelected()){
+            // un-select the trip
+            trip.setSelected(false);
+            if (mTripsSelected > 0){
+                mTripsSelected--;
+            }
+        }else{
+            // select the trip unless trip limit has been reached
+            if (mTripsSelected < MAX_TRIPS_SELECTABLE ){
+                trip.setSelected(true);
+                mTripsSelected++;
+            }
+        }
+
+    }
+
+
 
 
 }

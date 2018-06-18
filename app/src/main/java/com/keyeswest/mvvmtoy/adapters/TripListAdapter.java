@@ -65,6 +65,7 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
     @Override
     public void onBindViewHolder(@NonNull TripViewHolder holder, int position) {
         holder.binding.setTrip(mTripList.get(position));
+
         holder.binding.executePendingBindings();
 
     }
@@ -74,73 +75,16 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
         return  mTripList == null ? 0 : mTripList.size();
     }
 
-    private List<TripEntity> deepCopyList(List<TripEntity> original){
-        List<TripEntity> copyList = new ArrayList<>();
-        for (TripEntity trip : original){
-           TripEntity newTrip = new TripEntity(trip);
-            copyList.add(newTrip);
-        }
 
-        return copyList;
-    }
 
     public void setTripList(final List< TripEntity> tripList){
         if (mTripList == null){
-            mTripList = deepCopyList(tripList);  // copy by reference need to copy by value
+            mTripList =tripList;
             notifyItemRangeInserted(0, tripList.size());
         }else{
 
-            /*
-            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
-                @Override
-                public int getOldListSize() {
-                    return mTripList.size();
-                }
-
-                @Override
-                public int getNewListSize() {
-                    return tripList.size();
-                }
-
-                @Override
-                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return mTripList.get(oldItemPosition).getId()
-                            .equals(tripList.get(newItemPosition).getId());
-                }
-
-                @Override
-                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    Timber.d("Are contents same invoked");
-                    Trip newTrip = tripList.get(newItemPosition);
-                    Trip oldTrip = mTripList.get(oldItemPosition);
-                    boolean areSame = Objects.equals(newTrip.getId(), oldTrip.getId()) &&
-                            Objects.equals(newTrip.getTime(), oldTrip.getTime()) &&
-                            Objects.equals(newTrip.getDate(), oldTrip.getDate()) &&
-                            Objects.equals(newTrip.getDistanceMiles(),
-                                    oldTrip.getDistanceMiles()) &&
-                            MathHelper.areSame(newTrip.getMaxLatitude(),
-                                    oldTrip.getMaxLatitude()) &&
-                            MathHelper.areSame(newTrip.getMinLatitude(),
-                                    oldTrip.getMinLatitude()) &&
-                            MathHelper.areSame(newTrip.getMinLongitude(),
-                                    oldTrip.getMinLongitude()) &&
-                            MathHelper.areSame(newTrip.getMaxLongitude(),
-                                    oldTrip.getMaxLongitude()) &&
-                            (newTrip.isFavorite() == oldTrip.isFavorite()) &&
-                            (newTrip.getDuration() == oldTrip.getDuration());
-
-                    Timber.d("Are same = %s", Boolean.toString(areSame));
-                    return areSame;
-                }
-            });
-
-         */
-
-           // mTripList = deepCopyList(tripList);
             mTripList = tripList;
             notifyDataSetChanged();
-
-            //result.dispatchUpdatesTo(this);
         }
 
     }
@@ -153,6 +97,14 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
             super(binding.getRoot());
             this.binding = binding;
 
+            this.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mTripClickListener.onTripClicked(binding.getTrip());
+                    binding.executePendingBindings();
+                }
+            });
+
             binding.deleteBtn.setOnClickListener(v -> {
                 mTripClickListener.onDeleteClick(binding.getTrip());
             });
@@ -164,6 +116,9 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
                     mTripClickListener.onFavoriteClick(trip);
                 }
             });
+
+
+
         }
     }
 }
