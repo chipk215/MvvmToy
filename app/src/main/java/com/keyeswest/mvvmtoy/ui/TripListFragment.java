@@ -37,17 +37,19 @@ public class TripListFragment extends Fragment {
     private TripListViewModel mTripListViewModel;
 
 
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+        Timber.d("OnCreateView");
         mBinding = DataBindingUtil.inflate(inflater, R.layout.list_fragment, container,
                 false);
 
         mBinding.tripsList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mTripListAdapter = new TripListAdapter(getContext());
+
 
         DividerItemDecoration itemDecorator = new DividerItemDecoration(Objects
                 .requireNonNull(getActivity()), DividerItemDecoration.VERTICAL);
@@ -55,6 +57,7 @@ public class TripListFragment extends Fragment {
                 R.drawable.custom_list_divider)));
 
         mBinding.tripsList.addItemDecoration(itemDecorator);
+
 
         return mBinding.getRoot();
 
@@ -64,10 +67,12 @@ public class TripListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Timber.d("OnActivityCreated");
         mTripListViewModel =
                 ViewModelProviders.of(this).get(TripListViewModel.class);
 
-        mTripListAdapter.setUIHandlers(mTripListViewModel);
+        mTripListAdapter = new TripListAdapter(mTripListViewModel);
+
 
         mBinding.tripsList.setAdapter(mTripListAdapter);
 
@@ -75,6 +80,19 @@ public class TripListFragment extends Fragment {
 
         subscribeUi(mTripListViewModel);
     }
+
+    private TripViewModel findModelMatch(TripEntity trip){
+        TripViewModel result = null;
+        for (TripViewModel model : mTripListViewModel.getModels()){
+            if (model.tripEntity.getId().equals(trip.getId())){
+                result = model;
+                break;
+            }
+        }
+
+        return result;
+    }
+
 
     private void subscribeUi(TripListViewModel viewModel) {
         // Update the list when the data changes
@@ -85,13 +103,21 @@ public class TripListFragment extends Fragment {
                     Timber.d("onChanged Executed");
                     mBinding.setIsLoading(false);
 
-                    List<TripViewModel> models = new ArrayList<>();
+                    List<TripViewModel> newList = new ArrayList<>();
                     for (TripEntity trip : trips){
-                        TripViewModel model = new TripViewModel(trip, false);
-                        models.add(model);
+                        // determine if we have an existing model corresponding to a trip
+                        TripViewModel match = findModelMatch(trip);
+                        if (match != null){
+                            newList.add(match);
+                        }else{
+                            TripViewModel model = new TripViewModel(trip, false);
+                            newList.add(model);
+                        }
                     }
 
-                    mTripListAdapter.setTripList(models);
+                    viewModel.setModels(newList);
+
+                    mTripListAdapter.setTripModels(newList);
                 } else {
                     mBinding.setIsLoading(true);
                 }

@@ -14,6 +14,7 @@ import com.keyeswest.mvvmtoy.adapters.TripClickListener;
 import com.keyeswest.mvvmtoy.db.DataGenerator;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,6 +27,9 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
 
     private final MediatorLiveData<List<TripEntity>> mObservableTrips;
 
+
+    private List<TripViewModel> mModels;
+
     private int mTripsSelected;
 
     private Application mApplication;
@@ -34,6 +38,8 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
 
     public TripListViewModel(@NonNull Application application) {
         super(application);
+
+        Timber.d("Constructing TripListViewModel");
 
         mApplication = application;
 
@@ -48,6 +54,8 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
         mObservableTrips.addSource(trips, mObservableTrips::setValue);
 
         mTripsSelected = 0;
+
+        mModels = new ArrayList<>();
     }
 
     /**
@@ -57,20 +65,28 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
         return mObservableTrips;
     }
 
+    public void setModels(List<TripViewModel> models) {
+        mModels = models;
+    }
+
+    public List<TripViewModel> getModels() {
+        return mModels;
+    }
 
 
-    private void handleTripSelected(TripEntity trip){
 
-        if (trip.isSelected()){
+    private void handleTripSelected(TripViewModel model){
+
+        if (model.isSelected()){
             // un-select the trip
-            trip.setSelected(false);
+            model.setSelected(false);
             if (mTripsSelected > 0){
                 mTripsSelected--;
             }
         }else{
             // select the trip unless trip limit has been reached
             if (mTripsSelected < MAX_TRIPS_SELECTABLE ){
-                trip.setSelected(true);
+                model.setSelected(true);
                 mTripsSelected++;
             }else{
                 Toast.makeText(mApplication.getApplicationContext(),
@@ -89,9 +105,9 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
     }
 
     @Override
-    public void onTripClicked(TripEntity trip) {
+    public void onTripClicked(TripViewModel model) {
         Timber.d("on trip clicked");
-        handleTripSelected(trip);
+        handleTripSelected(model);
     }
 
     @Override

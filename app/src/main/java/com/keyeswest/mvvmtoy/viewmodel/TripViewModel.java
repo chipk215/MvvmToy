@@ -6,6 +6,8 @@ public  class TripViewModel {
 
     public  TripEntity tripEntity;
 
+
+
     public  boolean selected;
 
     public TripViewModel(TripEntity trip, boolean selected){
@@ -19,5 +21,9 @@ public  class TripViewModel {
 
     public boolean isSelected() {
         return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

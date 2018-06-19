@@ -51,8 +51,8 @@ public class TripEntity implements Trip {
     @SerializedName("Duration")
     private long duration ;
 
-    @Ignore
-    private transient boolean mSelected;
+  //  @Ignore
+ //   private transient boolean mSelected;
 
     public TripEntity(){}
 
@@ -66,7 +66,7 @@ public class TripEntity implements Trip {
         maxLongitude = trip.maxLongitude;
         distance = trip.distance;
         duration = trip.duration;
-        mSelected = trip.mSelected;
+       // mSelected = trip.mSelected;
     }
 
     public TripEntity(UUID id, long timeStamp, boolean favorite, double minLatitude,
@@ -81,7 +81,7 @@ public class TripEntity implements Trip {
         this.maxLongitude = maxLongitude;
         this.distance = distance;
         duration = elapsedTime;
-        mSelected = false;
+       // mSelected = false;
     }
 
     public Double getDistance() {
@@ -225,11 +225,11 @@ public class TripEntity implements Trip {
 
     }
 
-    public boolean isSelected(){
-        return mSelected;
-    }
+ //   public boolean isSelected(){
+ //       return mSelected;
+ //   }
 
-    public void setSelected(boolean selectState){
-        mSelected = selectState;
-    }
+   // public void setSelected(boolean selectState){
+    //    mSelected = selectState;
+   // }
 }

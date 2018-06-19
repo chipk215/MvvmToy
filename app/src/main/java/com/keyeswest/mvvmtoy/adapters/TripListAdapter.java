@@ -18,22 +18,14 @@ import java.util.List;
 
 public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripViewHolder> {
 
+    private List<TripViewModel> mTripModels;
 
-    List<TripViewModel> mTripList;
-
-    private Context mContext;
     private TripClickListener mTripClickListener;
 
 
-    public TripListAdapter(Context context) {
-        mContext = context;
-
-    }
-
-    public void setUIHandlers(TripClickListener listener) {
+    public TripListAdapter(TripClickListener listener){
         mTripClickListener = listener;
     }
-
 
     @NonNull
     @Override
@@ -43,68 +35,65 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
                 .inflate(LayoutInflater.from(parent.getContext()), R.layout.trip_item,
                         parent, false);
 
-
-        return new TripViewHolder(binding);
+        return new TripViewHolder(binding, mTripClickListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TripViewHolder holder, int position) {
-       holder.binding.setModel(mTripList.get(position));
-
-        holder.binding.executePendingBindings();
-
+        holder.setModel(mTripModels.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mTripList == null ? 0 : mTripList.size();
+        return mTripModels == null ? 0 : mTripModels.size();
     }
 
 
-    public void setTripList(final List<TripViewModel> tripList) {
-        if (mTripList == null) {
-            mTripList = tripList;
-            notifyItemRangeInserted(0, tripList.size());
+    public void setTripModels(final List<TripViewModel> tripModels) {
+        if (mTripModels == null) {
+            mTripModels = tripModels;
+            notifyItemRangeInserted(0, tripModels.size());
         } else {
-
-            mTripList = tripList;
+            mTripModels = tripModels;
             notifyDataSetChanged();
         }
 
     }
 
-    public class TripViewHolder extends RecyclerView.ViewHolder {
+    static class TripViewHolder extends RecyclerView.ViewHolder {
 
         final TripItemBinding binding;
 
-        public TripViewHolder(TripItemBinding binding) {
+        void setModel(TripViewModel model){
+            binding.setModel(model);
+            binding.executePendingBindings();
+        }
+
+        TripViewHolder(TripItemBinding binding, TripClickListener itemClickListener) {
             super(binding.getRoot());
             this.binding = binding;
 
 
-            this.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            this.itemView.setOnClickListener(v -> {
 
-                   mTripClickListener.onTripClicked(binding.getModel().getTripEntity());
-                    //TODO there must be a better way!
-                    TripEntity trip = binding.getModel().getTripEntity();
-                    binding.checkBox.setChecked(trip.isSelected());
-                }
+                itemClickListener.onTripClicked(binding.getModel());
+               //TODO there must be a better way!
+
+               binding.checkBox.setChecked(binding.getModel().isSelected());
+
             });
 
             binding.deleteBtn.setOnClickListener(v -> {
-                mTripClickListener.onDeleteClick(binding.getModel().getTripEntity());
+                itemClickListener.onDeleteClick(binding.getModel().getTripEntity());
             });
 
             binding.favBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     TripEntity trip = binding.getModel().getTripEntity();
-                    mTripClickListener.onFavoriteClick(trip);
+                    itemClickListener.onFavoriteClick(trip);
                 }
             });
-
 
         }
     }
