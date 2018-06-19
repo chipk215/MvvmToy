@@ -6,6 +6,7 @@
     <string name="delete">delete</string>
     <string name="favorite">favorite</string>
     <string name="distance">Distance: </string>
+    <string name="max_trips_message">Only 4 trips can be selected</string>
 
     <plurals name="seconds_plural">
         <item quantity="one">second</item>

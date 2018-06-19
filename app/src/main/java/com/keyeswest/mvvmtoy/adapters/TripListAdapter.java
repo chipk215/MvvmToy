@@ -1,53 +1,37 @@
 package com.keyeswest.mvvmtoy.adapters;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.keyeswest.mvvmtoy.R;
 import com.keyeswest.mvvmtoy.databinding.TripItemBinding;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
-import com.keyeswest.mvvmtoy.model.Trip;
-import com.keyeswest.mvvmtoy.utilities.MathHelper;
 
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import timber.log.Timber;
 
 
 public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripViewHolder> {
 
-    private final static int MAX_SELECTED_TRIPS = 4;
 
     List<TripEntity> mTripList;
 
     private Context mContext;
     private TripClickListener mTripClickListener;
-    private List<TripEntity> mInitialSelectedTrips;
-    private boolean mSelectionsFrozen;
 
 
-
-    public TripListAdapter(Context context, List<TripEntity> selectedTrips,
-                           TripClickListener listener){
+    public TripListAdapter(Context context){
         mContext = context;
-        mTripClickListener = listener;
-        mInitialSelectedTrips = selectedTrips;
-        if ( (selectedTrips == null) || (selectedTrips.size() <  MAX_SELECTED_TRIPS)){
-            mSelectionsFrozen = false;
-        }else{
-            mSelectionsFrozen = true;
-        }
 
+    }
+
+    public void setHandlers(TripClickListener listener){
+        mTripClickListener = listener;
     }
 
     @NonNull
@@ -97,11 +81,14 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
             super(binding.getRoot());
             this.binding = binding;
 
+
             this.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     mTripClickListener.onTripClicked(binding.getTrip());
-                    binding.executePendingBindings();
+                    TripEntity trip = binding.getTrip();
+                    binding.checkBox.setChecked(trip.isSelected());
                 }
             });
 

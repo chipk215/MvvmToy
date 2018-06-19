@@ -2,6 +2,7 @@ package com.keyeswest.mvvmtoy.ui;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,17 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.keyeswest.mvvmtoy.MainApp;
-import com.keyeswest.mvvmtoy.adapters.TripClickListener;
+import com.keyeswest.mvvmtoy.R;
 import com.keyeswest.mvvmtoy.adapters.TripListAdapter;
 import com.keyeswest.mvvmtoy.databinding.ListFragmentBinding;
-
-import android.databinding.DataBindingUtil;
-
-import com.keyeswest.mvvmtoy.R;
-import com.keyeswest.mvvmtoy.db.DataGenerator;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
-
 import com.keyeswest.mvvmtoy.viewmodel.TripListViewModel;
 
 import java.util.List;
@@ -48,7 +42,7 @@ public class TripListFragment extends Fragment {
 
         mBinding.tripsList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mTripListAdapter = new TripListAdapter(getContext(), null,  mTripClickListener);
+        mTripListAdapter = new TripListAdapter(getContext());
 
         DividerItemDecoration itemDecorator = new DividerItemDecoration(Objects
                 .requireNonNull(getActivity()), DividerItemDecoration.VERTICAL);
@@ -56,9 +50,6 @@ public class TripListFragment extends Fragment {
                 R.drawable.custom_list_divider)));
 
         mBinding.tripsList.addItemDecoration(itemDecorator);
-        mBinding.tripsList.setAdapter(mTripListAdapter);
-
-        mBinding.fab.setOnClickListener(fabListener);
 
         return mBinding.getRoot();
 
@@ -70,6 +61,12 @@ public class TripListFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mTripListViewModel =
                 ViewModelProviders.of(this).get(TripListViewModel.class);
+
+        mTripListAdapter.setHandlers(mTripListViewModel);
+
+        mBinding.tripsList.setAdapter(mTripListAdapter);
+
+        mBinding.fab.setOnClickListener(fabListener);
 
         subscribeUi(mTripListViewModel);
     }
@@ -94,65 +91,16 @@ public class TripListFragment extends Fragment {
     }
 
 
-    private final TripClickListener mTripClickListener = new TripClickListener() {
-        @Override
-        public void onItemChecked(TripEntity trip) {
-
-        }
-
-        @Override
-        public void onItemUnchecked(TripEntity trip) {
-
-        }
-
-        @Override
-        public void onDeleteClick(TripEntity trip) {
-            Timber.d("on delete clicked");
-            Timber.d("Trip distance= %s", trip.getDistanceMiles());
-
-            ((MainApp) Objects.requireNonNull(getContext())
-                    .getApplicationContext()).getRepository().delete(trip);
-
-
-        }
-
-        @Override
-        public void onTripClicked(TripEntity trip) {
-            Timber.d("on trip clicked");
-
-            mTripListViewModel.handleTripSelected(trip);
-
-
-        }
-
-        @Override
-        public void onFavoriteClick(TripEntity trip) {
-            // flip the favorite status
-            Timber.d("Favorite clicked");
-            Timber.d("Current status %s", Boolean.toString(trip.isFavorite()));
-            trip.setFavorite(! trip.isFavorite());
-            Timber.d("New status %s", Boolean.toString(trip.isFavorite()));
-
-            //update database which will update view
-            ((MainApp) Objects.requireNonNull(getContext())
-                    .getApplicationContext()).getRepository().update(trip);
-
-
-        }
-    };
-
-
     private View.OnClickListener fabListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Timber.d("Fab clicked insert random trip");
-            List<TripEntity> trips = DataGenerator.generateTrips(1);
-
-            ((MainApp) Objects.requireNonNull(getActivity()).getApplication())
-                    .getRepository().insert(trips.get(0));
+            mTripListViewModel.onFabClicked();
 
         }
     };
+
+
+
 
 
 
