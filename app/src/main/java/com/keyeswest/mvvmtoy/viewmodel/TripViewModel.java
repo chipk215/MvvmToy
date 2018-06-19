@@ -1,63 +1,23 @@
 package com.keyeswest.mvvmtoy.viewmodel;
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
-import android.support.annotation.NonNull;
-
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
 
-public class TripViewModel  extends AndroidViewModel {
+public  class TripViewModel {
 
-    private TripEntity mTrip;
+    public  TripEntity tripEntity;
 
-    //checkbox select state
-    private MutableLiveData<Boolean> mSelected;
+    public  boolean selected;
 
-    public TripViewModel(@NonNull Application application, TripEntity trip){
-
-        super(application);
-        mTrip = trip;
-
+    public TripViewModel(TripEntity trip, boolean selected){
+        tripEntity = trip;
+        this.selected = selected;
     }
 
-    public void setSelected(Boolean value){
-        mSelected.setValue(value);
+    public TripEntity getTripEntity() {
+        return tripEntity;
     }
 
-    public MutableLiveData<Boolean> getSelected(){
-        return mSelected;
+    public boolean isSelected() {
+        return selected;
     }
-
-    public void setTrip(TripEntity trip){
-        this.mTrip = trip;
-    }
-
-    public TripEntity getTrip(){
-        return mTrip;
-    }
-
-
-    public static class Factory extends ViewModelProvider.NewInstanceFactory {
-
-        @NonNull
-        private final Application mApplication;
-        private TripEntity mTrip;
-
-
-        public Factory(@NonNull Application application, TripEntity trip) {
-            mApplication = application;
-            mTrip = trip;
-        }
-
-        @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
-            //noinspection unchecked
-            return (T) new TripViewModel(mApplication, mTrip);
-        }
-    }
-
 }

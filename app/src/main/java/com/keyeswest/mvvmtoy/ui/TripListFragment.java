@@ -21,7 +21,9 @@ import com.keyeswest.mvvmtoy.databinding.ListFragmentBinding;
 import com.keyeswest.mvvmtoy.db.DataGenerator;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
 import com.keyeswest.mvvmtoy.viewmodel.TripListViewModel;
+import com.keyeswest.mvvmtoy.viewmodel.TripViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -82,7 +84,14 @@ public class TripListFragment extends Fragment {
                 if (trips != null) {
                     Timber.d("onChanged Executed");
                     mBinding.setIsLoading(false);
-                    mTripListAdapter.setTripList(trips);
+
+                    List<TripViewModel> models = new ArrayList<>();
+                    for (TripEntity trip : trips){
+                        TripViewModel model = new TripViewModel(trip, false);
+                        models.add(model);
+                    }
+
+                    mTripListAdapter.setTripList(models);
                 } else {
                     mBinding.setIsLoading(true);
                 }

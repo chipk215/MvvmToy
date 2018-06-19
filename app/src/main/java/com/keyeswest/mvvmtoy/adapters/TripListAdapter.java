@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.keyeswest.mvvmtoy.R;
 import com.keyeswest.mvvmtoy.databinding.TripItemBinding;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
+import com.keyeswest.mvvmtoy.viewmodel.TripViewModel;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
 public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripViewHolder> {
 
 
-    List<TripEntity> mTripList;
+    List<TripViewModel> mTripList;
 
     private Context mContext;
     private TripClickListener mTripClickListener;
@@ -48,7 +49,7 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
 
     @Override
     public void onBindViewHolder(@NonNull TripViewHolder holder, int position) {
-        holder.binding.setTrip(mTripList.get(position));
+       holder.binding.setModel(mTripList.get(position));
 
         holder.binding.executePendingBindings();
 
@@ -60,7 +61,7 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
     }
 
 
-    public void setTripList(final List<TripEntity> tripList) {
+    public void setTripList(final List<TripViewModel> tripList) {
         if (mTripList == null) {
             mTripList = tripList;
             notifyItemRangeInserted(0, tripList.size());
@@ -85,21 +86,21 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
                 @Override
                 public void onClick(View v) {
 
-                    mTripClickListener.onTripClicked(binding.getTrip());
+                   mTripClickListener.onTripClicked(binding.getModel().getTripEntity());
                     //TODO there must be a better way!
-                    TripEntity trip = binding.getTrip();
+                    TripEntity trip = binding.getModel().getTripEntity();
                     binding.checkBox.setChecked(trip.isSelected());
                 }
             });
 
             binding.deleteBtn.setOnClickListener(v -> {
-                mTripClickListener.onDeleteClick(binding.getTrip());
+                mTripClickListener.onDeleteClick(binding.getModel().getTripEntity());
             });
 
             binding.favBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    TripEntity trip = binding.getTrip();
+                    TripEntity trip = binding.getModel().getTripEntity();
                     mTripClickListener.onFavoriteClick(trip);
                 }
             });

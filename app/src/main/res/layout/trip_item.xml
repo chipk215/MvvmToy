@@ -2,8 +2,8 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-        <variable name="trip"
-            type = "com.keyeswest.mvvmtoy.db.entity.TripEntity"/>
+        <variable name="model"
+            type = "com.keyeswest.mvvmtoy.viewmodel.TripViewModel"/>
 
     </data>
 
@@ -22,7 +22,7 @@
             android:layout_marginStart="@dimen/margin_12"
             app:layout_constraintStart_toEndOf="@+id/date_lbl"
             app:layout_constraintTop_toTopOf="@+id/date_lbl"
-            android:text="@{trip.getTime()}"
+            android:text="@{model.tripEntity.getTime()}"
             tools:text="Time" />
 
         <TextView
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_16"
             android:layout_marginTop="@dimen/margin_8"
-            android:text="@{trip.getDate()}"
+            android:text="@{model.tripEntity.getDate()}"
             app:layout_constraintStart_toEndOf="@+id/checkBox"
             app:layout_constraintTop_toTopOf="@+id/checkBox"
             tools:text="Date" />
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_8"
             android:layout_marginTop="@dimen/margin_16"
-            android:text="@{trip.getDistanceMiles()}"
+            android:text="@{model.tripEntity.getDistanceMiles()}"
             app:layout_constraintStart_toEndOf="@+id/dist_label"
             app:layout_constraintTop_toBottomOf="@+id/date_lbl"
             tools:text="Distance" />
@@ -54,7 +54,7 @@
             android:layout_marginStart="@dimen/margin_8"
             android:layout_marginTop="@dimen/margin_8"
             android:clickable="false"
-            android:checked="@{trip.isSelected()}"
+            android:checked="@{model.selected}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -63,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_4"
-            android:text="@{trip.getMileOrMiles(context)}"
+            android:text="@{model.tripEntity.getMileOrMiles(context)}"
             tools:text="miles"
             app:layout_constraintStart_toEndOf="@+id/distance_lb"
             app:layout_constraintTop_toTopOf="@+id/distance_lb" />
@@ -95,8 +95,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:src="@{trip.getFavoriteImage(context)}"
-            android:tag="@{trip.isFavorite()}"/>
+            android:src="@{model.tripEntity.getFavoriteImage(context)}"
+            android:tag="@{model.tripEntity.isFavorite()}"/>
 
         <TextView
             android:id="@+id/dist_label"
