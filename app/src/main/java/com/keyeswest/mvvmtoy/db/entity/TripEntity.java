@@ -1,27 +1,15 @@
 package com.keyeswest.mvvmtoy.db.entity;
 
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
-import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 
 import com.google.gson.annotations.SerializedName;
-import com.keyeswest.mvvmtoy.R;
-import com.keyeswest.mvvmtoy.model.Trip;
-import com.keyeswest.mvvmtoy.utilities.PluralHelpers;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.util.Date;
 import java.util.UUID;
 
-import timber.log.Timber;
-
 @Entity(tableName="trip")
-public class TripEntity implements Trip {
+public class TripEntity  {
 
     @PrimaryKey
     @NonNull
@@ -51,8 +39,6 @@ public class TripEntity implements Trip {
     @SerializedName("Duration")
     private long duration ;
 
-  //  @Ignore
- //   private transient boolean mSelected;
 
     public TripEntity(){}
 
@@ -66,7 +52,7 @@ public class TripEntity implements Trip {
         maxLongitude = trip.maxLongitude;
         distance = trip.distance;
         duration = trip.duration;
-       // mSelected = trip.mSelected;
+
     }
 
     public TripEntity(UUID id, long timeStamp, boolean favorite, double minLatitude,
@@ -81,7 +67,7 @@ public class TripEntity implements Trip {
         this.maxLongitude = maxLongitude;
         this.distance = distance;
         duration = elapsedTime;
-       // mSelected = false;
+
     }
 
     public Double getDistance() {
@@ -92,7 +78,6 @@ public class TripEntity implements Trip {
         this.distance = distance;
     }
 
-    @Override
     public UUID getId() {
         return id;
     }
@@ -117,7 +102,7 @@ public class TripEntity implements Trip {
         this.favorite = favorite;
     }
 
-    @Override
+
     public Double getMinLatitude() {
         return minLatitude;
     }
@@ -126,7 +111,7 @@ public class TripEntity implements Trip {
         this.minLatitude = minLatitude;
     }
 
-    @Override
+
     public Double getMaxLatitude() {
         return maxLatitude;
     }
@@ -135,7 +120,7 @@ public class TripEntity implements Trip {
         this.maxLatitude = maxLatitude;
     }
 
-    @Override
+
     public Double getMinLongitude() {
         return minLongitude;
     }
@@ -144,7 +129,7 @@ public class TripEntity implements Trip {
         this.minLongitude = minLongitude;
     }
 
-    @Override
+
     public Double getMaxLongitude() {
         return maxLongitude;
     }
@@ -153,7 +138,7 @@ public class TripEntity implements Trip {
         this.maxLongitude = maxLongitude;
     }
 
-    @Override
+
     public long getDuration() {
         return duration;
     }
@@ -162,26 +147,7 @@ public class TripEntity implements Trip {
         duration = elapsedTime;
     }
 
-    @Override
-    public String getDate(){
-        Date date = new Date(timeStamp * 1000);
-        return DateFormat.getDateInstance(DateFormat.SHORT).format(date);
 
-    }
-
-    @Override
-    public String getTime(){
-        Date date = new Date(timeStamp * 1000);
-        return DateFormat.getTimeInstance(DateFormat.SHORT).format(date);
-
-    }
-
-    @Override
-    public String getDistanceMiles(){
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        double METERS_TO_MILES = 0.000621371;
-        return decimalFormat.format(distance * METERS_TO_MILES);
-    }
 
     @Override
     public boolean equals(Object o){
@@ -203,33 +169,4 @@ public class TripEntity implements Trip {
 
     }
 
-    @Override
-    public String getMileOrMiles(Context context){
-        return context.getResources().getQuantityString(R.plurals.miles_plural,
-                PluralHelpers.getPluralQuantity(getDistance()));
-
-    }
-
-    @Override
-    public Drawable getFavoriteImage(Context context){
-
-        Timber.d("Get Favorite Image");
-        if (favorite){
-            Timber.d("Returning favorite filled");
-            return ContextCompat.getDrawable(context,R.drawable.fav_star_filled);
-        }else{
-            Timber.d("Returning (non)favorite border");
-            return ContextCompat.getDrawable(context,R.drawable.fav_star_border);
-        }
-
-
-    }
-
- //   public boolean isSelected(){
- //       return mSelected;
- //   }
-
-   // public void setSelected(boolean selectState){
-    //    mSelected = selectState;
-   // }
 }

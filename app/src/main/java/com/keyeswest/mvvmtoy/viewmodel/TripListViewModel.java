@@ -11,22 +11,19 @@ import com.keyeswest.mvvmtoy.DataRepository;
 import com.keyeswest.mvvmtoy.MainApp;
 import com.keyeswest.mvvmtoy.R;
 import com.keyeswest.mvvmtoy.adapters.TripClickListener;
-import com.keyeswest.mvvmtoy.db.DataGenerator;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import timber.log.Timber;
 
-public class TripListViewModel extends AndroidViewModel implements TripClickListener{
+public class TripListViewModel extends AndroidViewModel implements TripClickListener {
 
 
     private static final int MAX_TRIPS_SELECTABLE = 4;
 
     private final MediatorLiveData<List<TripEntity>> mObservableTrips;
-
 
     private List<TripViewModel> mModels;
 
@@ -65,30 +62,52 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
         return mObservableTrips;
     }
 
-    public void setModels(List<TripViewModel> models) {
-        mModels = models;
+
+    public List<TripViewModel> updateTrips(List<TripEntity> trips) {
+        List<TripViewModel> newList = new ArrayList<>();
+        for (TripEntity trip : trips) {
+            // determine if we have an existing model corresponding to a trip
+            TripViewModel match = findModelMatch(trip);
+            if (match != null) {
+                newList.add(match);
+            } else {
+                TripViewModel model = new TripViewModel(trip, false);
+                newList.add(model);
+            }
+        }
+
+        mModels = newList;
+
+        return newList;
     }
 
-    public List<TripViewModel> getModels() {
-        return mModels;
+
+    private TripViewModel findModelMatch(TripEntity trip) {
+        TripViewModel result = null;
+        for (TripViewModel model : mModels) {
+            if (model.tripEntity.getId().equals(trip.getId())) {
+                result = model;
+                break;
+            }
+        }
+
+        return result;
     }
 
+    private void handleTripSelected(TripViewModel model) {
 
-
-    private void handleTripSelected(TripViewModel model){
-
-        if (model.isSelected()){
+        if (model.isSelected()) {
             // un-select the trip
             model.setSelected(false);
-            if (mTripsSelected > 0){
+            if (mTripsSelected > 0) {
                 mTripsSelected--;
             }
-        }else{
+        } else {
             // select the trip unless trip limit has been reached
-            if (mTripsSelected < MAX_TRIPS_SELECTABLE ){
+            if (mTripsSelected < MAX_TRIPS_SELECTABLE) {
                 model.setSelected(true);
                 mTripsSelected++;
-            }else{
+            } else {
                 Toast.makeText(mApplication.getApplicationContext(),
                         R.string.max_trips_message, Toast.LENGTH_SHORT).show();
             }
@@ -115,7 +134,7 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
         // flip the favorite status
         Timber.d("Favorite clicked");
         Timber.d("Current status %s", Boolean.toString(trip.isFavorite()));
-        trip.setFavorite(! trip.isFavorite());
+        trip.setFavorite(!trip.isFavorite());
         Timber.d("New status %s", Boolean.toString(trip.isFavorite()));
 
         //update database which will update view

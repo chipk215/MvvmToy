@@ -22,7 +22,7 @@
             android:layout_marginStart="@dimen/margin_12"
             app:layout_constraintStart_toEndOf="@+id/date_lbl"
             app:layout_constraintTop_toTopOf="@+id/date_lbl"
-            android:text="@{model.tripEntity.getTime()}"
+            android:text="@{model.getTime()}"
             tools:text="Time" />
 
         <TextView
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_16"
             android:layout_marginTop="@dimen/margin_8"
-            android:text="@{model.tripEntity.getDate()}"
+            android:text="@{model.getDate()}"
             app:layout_constraintStart_toEndOf="@+id/checkBox"
             app:layout_constraintTop_toTopOf="@+id/checkBox"
             tools:text="Date" />
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_8"
             android:layout_marginTop="@dimen/margin_16"
-            android:text="@{model.tripEntity.getDistanceMiles()}"
+            android:text="@{model.getDistanceMiles()}"
             app:layout_constraintStart_toEndOf="@+id/dist_label"
             app:layout_constraintTop_toBottomOf="@+id/date_lbl"
             tools:text="Distance" />
@@ -63,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_4"
-            android:text="@{model.tripEntity.getMileOrMiles(context)}"
+            android:text="@{model.getMileOrMiles(context)}"
             tools:text="miles"
             app:layout_constraintStart_toEndOf="@+id/distance_lb"
             app:layout_constraintTop_toTopOf="@+id/distance_lb" />
@@ -95,7 +95,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:src="@{model.tripEntity.getFavoriteImage(context)}"
+            android:src="@{model.getFavoriteImage(context)}"
             android:tag="@{model.tripEntity.isFavorite()}"/>
 
         <TextView
