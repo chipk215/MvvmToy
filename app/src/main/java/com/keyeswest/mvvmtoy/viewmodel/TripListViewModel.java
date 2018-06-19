@@ -107,11 +107,5 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
 
     }
 
-    @Override
-    public void onFabClicked() {
-        Timber.d("Fab clicked insert random trip");
-        List<TripEntity> trips = DataGenerator.generateTrips(1);
 
-        mDataRepository.insert(trips.get(0));
-    }
 }

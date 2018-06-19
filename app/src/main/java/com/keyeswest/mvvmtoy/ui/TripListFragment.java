@@ -13,9 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.keyeswest.mvvmtoy.MainApp;
 import com.keyeswest.mvvmtoy.R;
+
 import com.keyeswest.mvvmtoy.adapters.TripListAdapter;
 import com.keyeswest.mvvmtoy.databinding.ListFragmentBinding;
+import com.keyeswest.mvvmtoy.db.DataGenerator;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
 import com.keyeswest.mvvmtoy.viewmodel.TripListViewModel;
 
@@ -62,7 +65,7 @@ public class TripListFragment extends Fragment {
         mTripListViewModel =
                 ViewModelProviders.of(this).get(TripListViewModel.class);
 
-        mTripListAdapter.setHandlers(mTripListViewModel);
+        mTripListAdapter.setUIHandlers(mTripListViewModel);
 
         mBinding.tripsList.setAdapter(mTripListAdapter);
 
@@ -91,17 +94,16 @@ public class TripListFragment extends Fragment {
     }
 
 
-    private View.OnClickListener fabListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mTripListViewModel.onFabClicked();
+    private View.OnClickListener fabListener = (View v) -> {
+        Timber.d("Fab clicked insert random trip");
+        List<TripEntity> trips = DataGenerator.generateTrips(1);
 
-        }
+        // Later this will start a new activity
+
+        ((MainApp) Objects.requireNonNull(getActivity()).getApplication())
+                .getRepository().insert(trips.get(0));
+
     };
-
-
-
-
 
 
 

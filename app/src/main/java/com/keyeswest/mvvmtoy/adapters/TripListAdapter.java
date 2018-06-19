@@ -1,6 +1,5 @@
 package com.keyeswest.mvvmtoy.adapters;
 
-import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
@@ -25,14 +24,15 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
     private TripClickListener mTripClickListener;
 
 
-    public TripListAdapter(Context context){
+    public TripListAdapter(Context context) {
         mContext = context;
 
     }
 
-    public void setHandlers(TripClickListener listener){
+    public void setUIHandlers(TripClickListener listener) {
         mTripClickListener = listener;
     }
+
 
     @NonNull
     @Override
@@ -56,16 +56,15 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
 
     @Override
     public int getItemCount() {
-        return  mTripList == null ? 0 : mTripList.size();
+        return mTripList == null ? 0 : mTripList.size();
     }
 
 
-
-    public void setTripList(final List< TripEntity> tripList){
-        if (mTripList == null){
-            mTripList =tripList;
+    public void setTripList(final List<TripEntity> tripList) {
+        if (mTripList == null) {
+            mTripList = tripList;
             notifyItemRangeInserted(0, tripList.size());
-        }else{
+        } else {
 
             mTripList = tripList;
             notifyDataSetChanged();
@@ -73,7 +72,7 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
 
     }
 
-    public class TripViewHolder extends RecyclerView.ViewHolder{
+    public class TripViewHolder extends RecyclerView.ViewHolder {
 
         final TripItemBinding binding;
 
@@ -87,6 +86,7 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
                 public void onClick(View v) {
 
                     mTripClickListener.onTripClicked(binding.getTrip());
+                    //TODO there must be a better way!
                     TripEntity trip = binding.getTrip();
                     binding.checkBox.setChecked(trip.isSelected());
                 }
@@ -103,7 +103,6 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
                     mTripClickListener.onFavoriteClick(trip);
                 }
             });
-
 
 
         }

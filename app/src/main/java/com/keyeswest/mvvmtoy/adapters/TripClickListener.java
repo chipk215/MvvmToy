@@ -14,5 +14,5 @@ public interface TripClickListener {
 
     void onFavoriteClick(TripEntity trip);
 
-    void onFabClicked();
+
 }
