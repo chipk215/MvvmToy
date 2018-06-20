@@ -1,4 +1,4 @@
-package com.keyeswest.trackmeroom;
+package com.keyeswest.mvvmtoy;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,51 +8,46 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
 
-
-import com.keyeswest.trackmeroom.utilities.SortResult;
-import com.keyeswest.trackmeroom.utilities.SortSharedPreferences;
+import com.keyeswest.mvvmtoy.utilities.SortResult;
+import com.keyeswest.mvvmtoy.utilities.SortSharedPreferences;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import timber.log.Timber;
 
-import static com.keyeswest.trackmeroom.utilities.SortSharedPreferences.getSortByCode;
+import static com.keyeswest.mvvmtoy.utilities.SortSharedPreferences.getSortByCode;
 
 
 public class SortActivity extends AppCompatActivity {
 
-    public static Intent newIntent(Context packageContext){
-        return new Intent(packageContext, SortActivity.class);
-    }
-
-    public static SortResult getSortChangedResult(Intent data){
-        boolean sortChanged = data.getBooleanExtra(EXTRA_CHANGE_SORT_RESULT,
-                true);
-
-        SortPreferenceEnum selected = SortPreferenceEnum.lookupByCode(data.getStringExtra(EXTRA_SELECTED_SORT ));
-        return new SortResult(sortChanged, selected);
-    }
-
     private static final String EXTRA_CHANGE_SORT_RESULT = "extraChangeSortResult";
     private static final String EXTRA_SELECTED_SORT = "extraSelectedSort";
-
+    @BindView(R.id.submit_btn)
+    Button mSubmitButton;
+    @BindView(R.id.radioFilterGroup)
+    RadioGroup mRadioFilterGroup;
     private Unbinder mUnbinder;
 
     private SortPreferenceEnum mSelectedSort;
 
-    @BindView(R.id.submit_btn)
-    Button mSubmitButton;
+    public static Intent newIntent(Context packageContext) {
+        return new Intent(packageContext, SortActivity.class);
+    }
 
+    public static SortResult getSortChangedResult(Intent data) {
+        boolean sortChanged = data.getBooleanExtra(EXTRA_CHANGE_SORT_RESULT,
+                true);
 
-    @BindView(R.id.radioFilterGroup)
-    RadioGroup mRadioFilterGroup;
+        SortPreferenceEnum selected = SortPreferenceEnum.lookupByCode(data.getStringExtra(EXTRA_SELECTED_SORT));
+        return new SortResult(sortChanged, selected);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sort);
-        mUnbinder = ButterKnife.bind( this);
+        mUnbinder = ButterKnife.bind(this);
 
         setCurrentSortPreference();
 
@@ -63,7 +58,7 @@ public class SortActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 int selectedId = mRadioFilterGroup.getCheckedRadioButtonId();
-                switch (selectedId){
+                switch (selectedId) {
                     case R.id.date_newest_rb:
                         Timber.d("Setting sort order to newest");
                         mSelectedSort = SortPreferenceEnum.NEWEST;
@@ -101,8 +96,8 @@ public class SortActivity extends AppCompatActivity {
         String sortByCode = getSortByCode(this);
 
 
-        mSelectedSort= SortPreferenceEnum.lookupByCode(sortByCode);
-        switch (mSelectedSort){
+        mSelectedSort = SortPreferenceEnum.lookupByCode(sortByCode);
+        switch (mSelectedSort) {
             case NEWEST:
                 mRadioFilterGroup.check(R.id.date_newest_rb);
                 break;
@@ -122,14 +117,14 @@ public class SortActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         mUnbinder.unbind();
         super.onDestroy();
 
     }
 
 
-    private void setSortResult(boolean sortChanged){
+    private void setSortResult(boolean sortChanged) {
         Intent data = new Intent();
         data.putExtra(EXTRA_CHANGE_SORT_RESULT, sortChanged);
         data.putExtra(EXTRA_SELECTED_SORT, mSelectedSort.getCode());
@@ -137,7 +132,7 @@ public class SortActivity extends AppCompatActivity {
 
     }
 
-    private void setSortOrder( SortPreferenceEnum preference){
+    private void setSortOrder(SortPreferenceEnum preference) {
 
         SortSharedPreferences.setSortOrder(this, preference.getCode());
 

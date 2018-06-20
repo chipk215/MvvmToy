@@ -23,6 +23,18 @@
     <string name="submit">Submit</string>
     <string name="cancel">Cancel</string>
 
+    <!-- activity_sort.xml  -->
+    <string name="sort_trip_list">Sort trip list by:</string>
+    <string name="recent_trips_first">Recent trips first.</string>
+    <string name="oldest_trips_first">Oldest trips first.</string>
+    <string name="shortest_trips_first">Shortest trips first.</string>
+    <string name="longest_trips_first">Longest trips first.</string>
+    <string name="sort_list">Sort List</string>
+    <string name="most_recent_sort">Trips ordered by most recent trip.</string>
+    <string name="trips_ordered_oldest">Trips ordered by oldest trip.</string>
+    <string name="trips_ordered_longest">Trips ordered by longest distance.</string>
+    <string name="trips_ordered_shortest">Trips ordered by shortest distance.</string>
+
     <string name="date_filter">Trip list filtered by date range.</string>
     <string name="favorite_filter">Trip list filtered to only show favorites. </string>
     <string name="favorite_date_filter">Trip list filtered to only show favorites in a date range.</string>

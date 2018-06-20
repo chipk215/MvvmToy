@@ -1,7 +1,7 @@
-package com.keyeswest.trackmeroom.utilities;
+package com.keyeswest.mvvmtoy.utilities;
 
 
-import com.keyeswest.trackmeroom.SortPreferenceEnum;
+import com.keyeswest.mvvmtoy.SortPreferenceEnum;
 
 public class SortResult {
 

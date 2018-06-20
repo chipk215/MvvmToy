@@ -1,11 +1,9 @@
 package com.keyeswest.mvvmtoy.viewmodel;
 
 
-import com.keyeswest.mvvmtoy.viewmodel.TripViewModel;
-
 import java.util.Comparator;
 
-public class SortTripByDate implements Comparator<TripViewModel> {
+public class SortTripViewModelByDate implements Comparator<TripViewModel> {
 
     @Override
     public int compare(TripViewModel tripModel1, TripViewModel tripModel2) {

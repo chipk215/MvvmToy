@@ -11,24 +11,30 @@ import android.widget.Toast;
 import com.keyeswest.mvvmtoy.DataRepository;
 import com.keyeswest.mvvmtoy.MainApp;
 import com.keyeswest.mvvmtoy.R;
-import com.keyeswest.mvvmtoy.adapters.TripClickListener;
+import com.keyeswest.mvvmtoy.SortPreferenceEnum;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
 import com.keyeswest.mvvmtoy.utilities.FilterSharedPreferences;
+import com.keyeswest.mvvmtoy.utilities.SortSharedPreferences;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import timber.log.Timber;
 
-public class TripListViewModel extends AndroidViewModel implements TripClickListener {
-
+public class TripListViewModel extends AndroidViewModel {
 
     private static final int MAX_TRIPS_SELECTABLE = 4;
 
     private final MediatorLiveData<List<TripEntity>> mObservableTrips;
 
+    //TODO - Is this a good idea to store POJO list item view models in the AndroidViewModel
+    // The benefit is that the data is saved on config changes which is what is needed.
+
+    //Collection of POJO Trip View Models  (not LiveData)
     private List<TripViewModel> mModels;
 
+    // A count of the umber of selected (checked) trips
     private int mTripsSelected;
 
     private Application mApplication;
@@ -64,9 +70,14 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
         return mObservableTrips;
     }
 
-
-    public List<TripViewModel> updateTrips(List<TripEntity> trips, boolean applyFilter) {
-
+    /**
+     * Creates a TripViewModel for each trip.
+     * Stores the collection of POJO view models in the TripListVewModel.
+     *
+     * @param trips - trip entity data obtained from database
+     * @return - List of TripViewModel wrapped trips
+     */
+    public List<TripViewModel> updateTrips(List<TripEntity> trips) {
 
         List<TripViewModel> newList = new ArrayList<>();
         List<TripViewModel> displayList;
@@ -84,16 +95,20 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
             }
         }
 
+        // Now that comparisons have been made between old list and new list, set the old
+        // list to the new list
         mModels = newList;
 
-        displayList = mModels;
-        if (applyFilter){
-            displayList = filterTrips();
-        }
+        // filter the list for viewing if needed
+        displayList = filterTrips();
 
+        //sort the list for viewing if needed
+        displayList = sort(displayList);
 
         return displayList;
     }
+
+
 
     public List<TripViewModel> filterTrips() {
 
@@ -116,38 +131,78 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
 
         favoriteFilter = FilterSharedPreferences.getFavoriteFilterSetting(context);
 
+        if (dateFilter || favoriteFilter) {
+            for (TripViewModel tripModel : mModels) {
+                TripEntity trip = tripModel.tripEntity;
 
-        for (TripViewModel tripModel : mModels) {
-            TripEntity trip = tripModel.tripEntity;
+                if (dateFilter && favoriteFilter) {
+                    long tripTime = trip.getTimeStamp();
+                    if ((tripTime >= startDate) && (tripTime <= endDate) && trip.isFavorite()) {
+                        displayList.add(tripModel);
+                    }
+                } else if (dateFilter) {
+                    long tripTime = trip.getTimeStamp();
+                    if ((tripTime >= startDate) && (tripTime <= endDate)) {
+                        displayList.add(tripModel);
+                    }
 
-            if (dateFilter && favoriteFilter) {
-                long tripTime = trip.getTimeStamp();
-                if ((tripTime >= startDate) && (tripTime <= endDate) && trip.isFavorite()) {
+                } else if (favoriteFilter && trip.isFavorite()) {
                     displayList.add(tripModel);
-                }
-            } else if (dateFilter) {
-                long tripTime = trip.getTimeStamp();
-                if ((tripTime >= startDate) && (tripTime <= endDate)) {
-                    displayList.add(tripModel);
-                }
 
-            } else if (favoriteFilter && trip.isFavorite()) {
-                displayList.add(tripModel);
-
+                }
             }
+        } else {
+            displayList = mModels;
         }
 
         return displayList;
-
     }
 
 
 
-    public List<TripViewModel> getAllTrips(){
+
+    public List<TripViewModel> getAllTrips() {
         return mModels;
     }
 
+    private List<TripViewModel> sort(List<TripViewModel> sourceList) {
+        Context context = mApplication.getApplicationContext();
 
+        List<TripViewModel> sorted = sourceList;
+        String sortByCode = SortSharedPreferences.getSortByCode(context);
+        SortPreferenceEnum sortPreference = SortPreferenceEnum.lookupByCode(sortByCode);
+
+        switch (sortPreference) {
+            case NEWEST:
+                Collections.sort(sorted, new SortTripViewModelByDate());
+                break;
+            case OLDEST:
+                Collections.sort(sorted, Collections.reverseOrder(new SortTripViewModelByDate()));
+                break;
+
+            case LONGEST:
+                Collections.sort(sorted, Collections.reverseOrder(new SortTripViewModelByDistance()));
+                break;
+
+            case SHORTEST:
+                Collections.sort(sorted, new SortTripViewModelByDistance());
+                break;
+
+            default:
+                Collections.sort(sorted, new SortTripViewModelByDate());
+
+        }
+
+        return sorted;
+    }
+
+
+    public List<TripViewModel> sort() {
+        return sort(mModels);
+    }
+
+
+    // Determine if a trip is in the existing list of trip models
     private TripViewModel findModelMatch(TripEntity trip) {
         TripViewModel result = null;
         for (TripViewModel model : mModels) {
@@ -160,7 +215,9 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
         return result;
     }
 
-    private void handleTripSelected(TripViewModel model) {
+
+    // A trip had been checked or unchecked in the UI.
+    public void handleTripSelected(TripViewModel model) {
 
         if (model.isSelected()) {
             // un-select the trip
@@ -178,34 +235,6 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
                         R.string.max_trips_message, Toast.LENGTH_SHORT).show();
             }
         }
-
-    }
-
-
-    @Override
-    public void onDeleteClick(TripEntity trip) {
-        Timber.d("on delete clicked");
-
-        mDataRepository.delete(trip);
-    }
-
-    @Override
-    public void onTripClicked(TripViewModel model) {
-        Timber.d("on trip clicked");
-        handleTripSelected(model);
-    }
-
-    @Override
-    public void onFavoriteClick(TripEntity trip) {
-        // flip the favorite status
-        Timber.d("Favorite clicked");
-        Timber.d("Current status %s", Boolean.toString(trip.isFavorite()));
-        trip.setFavorite(!trip.isFavorite());
-        Timber.d("New status %s", Boolean.toString(trip.isFavorite()));
-
-        //update database which will update view
-        mDataRepository.update(trip);
-
     }
 
 

@@ -1,11 +1,11 @@
-package com.keyeswest.trackmeroom.utilities;
+package com.keyeswest.mvvmtoy.utilities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
 
-import com.keyeswest.trackmeroom.SortPreferenceEnum;
+import com.keyeswest.mvvmtoy.SortPreferenceEnum;
 
 import static android.content.Context.MODE_PRIVATE;
 

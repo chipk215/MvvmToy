@@ -21,13 +21,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.keyeswest.mvvmtoy.DataRepository;
 import com.keyeswest.mvvmtoy.FilterActivity;
 import com.keyeswest.mvvmtoy.MainApp;
 import com.keyeswest.mvvmtoy.R;
+import com.keyeswest.mvvmtoy.SortActivity;
+import com.keyeswest.mvvmtoy.SortPreferenceEnum;
+import com.keyeswest.mvvmtoy.adapters.TripClickListener;
 import com.keyeswest.mvvmtoy.adapters.TripListAdapter;
 import com.keyeswest.mvvmtoy.databinding.ListFragmentBinding;
 import com.keyeswest.mvvmtoy.db.DataGenerator;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
+import com.keyeswest.mvvmtoy.utilities.SortResult;
 import com.keyeswest.mvvmtoy.viewmodel.TripListViewModel;
 import com.keyeswest.mvvmtoy.viewmodel.TripViewModel;
 
@@ -40,7 +45,7 @@ import timber.log.Timber;
 
 import static com.keyeswest.mvvmtoy.utilities.SnackbarHelper.showSnackbar;
 
-public class TripListFragment extends Fragment {
+public class TripListFragment extends Fragment implements TripClickListener {
     public static final String TAG = "TripListFragment";
 
     private static final String FILTER_STATE_EXTRA = "filterStateExtra";
@@ -53,6 +58,7 @@ public class TripListFragment extends Fragment {
     private boolean mListFiltered = false;
 
     private View mFragmentView;
+    private DataRepository mDataRepository;
 
 
     private View.OnClickListener fabListener = (View v) -> {
@@ -70,6 +76,7 @@ public class TripListFragment extends Fragment {
 
 
 
+    // *********************  Lifecycle Event Handlers ***********************************
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,8 +85,10 @@ public class TripListFragment extends Fragment {
             Timber.d("Restoring mSelectedSegments and filter state after config change");
 
             mListFiltered = savedInstanceState.getByte(FILTER_STATE_EXTRA) != 0;
-
         }
+
+        mDataRepository = ((MainApp) Objects.requireNonNull(getActivity()).getApplication())
+                .getRepository();
 
         setHasOptionsMenu(true);
     }
@@ -112,10 +121,12 @@ public class TripListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Timber.d("OnActivityCreated");
+
+
         mTripListViewModel =
                 ViewModelProviders.of(this).get(TripListViewModel.class);
 
-        mTripListAdapter = new TripListAdapter(mTripListViewModel);
+        mTripListAdapter = new TripListAdapter(this);
 
         mBinding.tripsList.setAdapter(mTripListAdapter);
 
@@ -158,11 +169,10 @@ public class TripListFragment extends Fragment {
         Intent intent;
         switch (item.getItemId()) {
 
-
             case R.id.sort:
 
-              //  intent = SortActivity.newIntent(getContext());
-             //   startActivityForResult(intent, REQUEST_SORT_PREFERENCES);
+                intent = SortActivity.newIntent(getContext());
+                startActivityForResult(intent, REQUEST_SORT_PREFERENCES);
                 return true;
             case R.id.filter:
                 intent = FilterActivity.newIntent(getContext(), mListFiltered);
@@ -204,22 +214,97 @@ public class TripListFragment extends Fragment {
 
 
             }
+        } else if (requestCode == REQUEST_SORT_PREFERENCES){
+            SortResult sortResult = SortActivity.getSortChangedResult(data);
+
+            if (sortResult.isSortChanged()) {
+
+
+                mTripListAdapter.setTripModels(mTripListViewModel.sort());
+                showSnackbar(mFragmentView, getSortMessage(sortResult.getSelectedSort()),
+                        Snackbar.LENGTH_SHORT);
+            }
+
         }
+    }
+
+
+    // *********************  UI  Event Handlers ***********************************
+
+    @Override
+    public void onDeleteClick(TripEntity trip) {
+        Timber.d("on delete clicked");
+
+        mDataRepository.delete(trip);
+    }
+
+    @Override
+    public void onTripClicked(TripViewModel model) {
+        Timber.d("on trip clicked");
+        mTripListViewModel.handleTripSelected(model);
+    }
+
+    @Override
+    public void onFavoriteClick(TripEntity trip) {
+        // flip the favorite status
+        Timber.d("Favorite clicked");
+        Timber.d("Current status %s", Boolean.toString(trip.isFavorite()));
+        trip.setFavorite(!trip.isFavorite());
+        Timber.d("New status %s", Boolean.toString(trip.isFavorite()));
+
+        //update database which will update view
+        mDataRepository.update(trip);
+
+    }
+
+
+    // *********************  private fragment methods ***********************************
+
+    private String getSortMessage(SortPreferenceEnum selectedSort) {
+        String result = getString(R.string.most_recent_sort);
+        switch (selectedSort) {
+            case NEWEST:
+                result = getString(R.string.most_recent_sort);
+                break;
+            case OLDEST:
+                result = getString(R.string.trips_ordered_oldest);
+                break;
+            case LONGEST:
+                result = getString(R.string.trips_ordered_longest);
+                break;
+            case SHORTEST:
+                result = getString(R.string.trips_ordered_shortest);
+                break;
+        }
+
+        return result;
     }
 
     private void subscribeUi(TripListViewModel tripListViewModel) {
         // Update the list when the data changes
 
+
+        // Note: this initial call to getTrips returns null because there are no observers
+        // associated with the list of trips. An observer is registered with the observe method
         tripListViewModel.getTrips().observe(this, new Observer<List<TripEntity>>() {
             @Override
             public void onChanged(@Nullable List<TripEntity> trips) {
                 if (trips != null) {
-                    Timber.d("onChanged Executed");
+                    Timber.d("Updated trip data is available");
 
                     mBinding.setIsLoading(false);
 
                     //TODO This seems very inefficient, a better way perhaps?
-                    List<TripViewModel> updatedList = tripListViewModel.updateTrips(trips, mListFiltered);
+                    List<TripViewModel> updatedList = tripListViewModel.updateTrips(trips);
+
+                    // Assumption - this fragment is the view controller whose job is to update
+                    // views, hence the call to the list adapter.
+
+                    // TripListViewModel holds the data to be displayed in the list view but is
+                    // not responsible for loading the adapter. Also why tis fragment handles the
+                    // click event but then invokes TripListViewModel to update the UI views
+
+                    //update the list view with the new trips
                     mTripListAdapter.setTripModels(updatedList);
 
                 } else {
@@ -249,6 +334,5 @@ public class TripListFragment extends Fragment {
                     Snackbar.LENGTH_LONG);
         }
     }
-
 
 }
