@@ -1,0 +1,145 @@
+package com.keyeswest.trackmeroom;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RadioGroup;
+
+
+import com.keyeswest.trackmeroom.utilities.SortResult;
+import com.keyeswest.trackmeroom.utilities.SortSharedPreferences;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import timber.log.Timber;
+
+import static com.keyeswest.trackmeroom.utilities.SortSharedPreferences.getSortByCode;
+
+
+public class SortActivity extends AppCompatActivity {
+
+    public static Intent newIntent(Context packageContext){
+        return new Intent(packageContext, SortActivity.class);
+    }
+
+    public static SortResult getSortChangedResult(Intent data){
+        boolean sortChanged = data.getBooleanExtra(EXTRA_CHANGE_SORT_RESULT,
+                true);
+
+        SortPreferenceEnum selected = SortPreferenceEnum.lookupByCode(data.getStringExtra(EXTRA_SELECTED_SORT ));
+        return new SortResult(sortChanged, selected);
+    }
+
+    private static final String EXTRA_CHANGE_SORT_RESULT = "extraChangeSortResult";
+    private static final String EXTRA_SELECTED_SORT = "extraSelectedSort";
+
+    private Unbinder mUnbinder;
+
+    private SortPreferenceEnum mSelectedSort;
+
+    @BindView(R.id.submit_btn)
+    Button mSubmitButton;
+
+
+    @BindView(R.id.radioFilterGroup)
+    RadioGroup mRadioFilterGroup;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sort);
+        mUnbinder = ButterKnife.bind( this);
+
+        setCurrentSortPreference();
+
+        setSortResult(false);
+
+        mSubmitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int selectedId = mRadioFilterGroup.getCheckedRadioButtonId();
+                switch (selectedId){
+                    case R.id.date_newest_rb:
+                        Timber.d("Setting sort order to newest");
+                        mSelectedSort = SortPreferenceEnum.NEWEST;
+                        break;
+                    case R.id.date_oldest_rb:
+                        Timber.d("Setting sort order to oldest");
+                        mSelectedSort = SortPreferenceEnum.OLDEST;
+                        break;
+
+                    case R.id.dist_longest_rb:
+                        Timber.d("Setting sort order to longest");
+                        mSelectedSort = SortPreferenceEnum.LONGEST;
+                        break;
+
+                    case R.id.dist_shortest_rb:
+                        Timber.d("Setting sort order to shortest");
+                        mSelectedSort = SortPreferenceEnum.SHORTEST;
+                        break;
+
+                    default:
+                        mSelectedSort = SortPreferenceEnum.NEWEST;
+                }
+
+                setSortOrder(mSelectedSort);
+
+                // send back a result for a snackbar message
+                setSortResult(true);
+                finish();
+            }
+        });
+    }
+
+    private void setCurrentSortPreference() {
+
+        String sortByCode = getSortByCode(this);
+
+
+        mSelectedSort= SortPreferenceEnum.lookupByCode(sortByCode);
+        switch (mSelectedSort){
+            case NEWEST:
+                mRadioFilterGroup.check(R.id.date_newest_rb);
+                break;
+            case OLDEST:
+                mRadioFilterGroup.check(R.id.date_oldest_rb);
+                break;
+            case LONGEST:
+                mRadioFilterGroup.check(R.id.dist_longest_rb);
+                break;
+            case SHORTEST:
+                mRadioFilterGroup.check(R.id.dist_shortest_rb);
+                break;
+            default:
+
+
+        }
+    }
+
+    @Override
+    public void onDestroy(){
+        mUnbinder.unbind();
+        super.onDestroy();
+
+    }
+
+
+    private void setSortResult(boolean sortChanged){
+        Intent data = new Intent();
+        data.putExtra(EXTRA_CHANGE_SORT_RESULT, sortChanged);
+        data.putExtra(EXTRA_SELECTED_SORT, mSelectedSort.getCode());
+        setResult(RESULT_OK, data);
+
+    }
+
+    private void setSortOrder( SortPreferenceEnum preference){
+
+        SortSharedPreferences.setSortOrder(this, preference.getCode());
+
+    }
+}
