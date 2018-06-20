@@ -8,6 +8,27 @@
     <string name="distance">Distance: </string>
     <string name="max_trips_message">Only 4 trips can be selected</string>
 
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
+    <string name="log">Log</string>
+
+    <string name="filter_list">Filter List</string>
+
+    <!-- activity_filter.xml  -->
+    <string name="end_date">End Date:</string>
+    <string name="start_date">Start Date:</string>
+    <string name="filter_trip_list">Filter trip list by:</string>
+    <string name="favorites_only">Favorites Only</string>
+    <string name="date_range">Date Range</string>
+    <string name="submit">Submit</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="date_filter">Trip list filtered by date range.</string>
+    <string name="favorite_filter">Trip list filtered to only show favorites. </string>
+    <string name="favorite_date_filter">Trip list filtered to only show favorites in a date range.</string>
+
+    <string name="dismiss">Dismiss</string>
+
     <plurals name="seconds_plural">
         <item quantity="one">second</item>
         <item quantity="other">seconds</item>

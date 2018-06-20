@@ -30,6 +30,7 @@ dependencies {
     def room_version = "1.1.0"
     def androidSupportVersion = "27.1.1"
     def timberVersion = "4.7.0"
+    def butterKnifeVersion = "8.8.1"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -55,6 +56,11 @@ dependencies {
 
     implementation 'com.google.code.gson:gson:2.8.2'
 
+    //ButterKnife
+    implementation "com.jakewharton:butterknife:$butterKnifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
+
+    implementation 'com.borax12.materialdaterangepicker:library:1.9'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

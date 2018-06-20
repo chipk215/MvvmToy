@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
@@ -12,6 +13,7 @@ import com.keyeswest.mvvmtoy.MainApp;
 import com.keyeswest.mvvmtoy.R;
 import com.keyeswest.mvvmtoy.adapters.TripClickListener;
 import com.keyeswest.mvvmtoy.db.entity.TripEntity;
+import com.keyeswest.mvvmtoy.utilities.FilterSharedPreferences;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,22 +65,86 @@ public class TripListViewModel extends AndroidViewModel implements TripClickList
     }
 
 
-    public List<TripViewModel> updateTrips(List<TripEntity> trips) {
+    public List<TripViewModel> updateTrips(List<TripEntity> trips, boolean applyFilter) {
+
+
         List<TripViewModel> newList = new ArrayList<>();
+        List<TripViewModel> displayList;
         for (TripEntity trip : trips) {
+
             // determine if we have an existing model corresponding to a trip
             TripViewModel match = findModelMatch(trip);
             if (match != null) {
                 newList.add(match);
+
             } else {
                 TripViewModel model = new TripViewModel(trip, false);
                 newList.add(model);
+
             }
         }
 
         mModels = newList;
 
-        return newList;
+        displayList = mModels;
+        if (applyFilter){
+            displayList = filterTrips();
+        }
+
+
+        return displayList;
+    }
+
+    public List<TripViewModel> filterTrips() {
+
+        boolean dateFilter;
+        boolean favoriteFilter;
+        long startDate = 0L;
+        long endDate = Integer.MAX_VALUE;
+
+        List<TripViewModel> displayList = new ArrayList<>();
+
+        Context context = mApplication.getApplicationContext();
+
+        // determine filter types
+        dateFilter = FilterSharedPreferences.isDateRangeSet(context);
+        if (dateFilter) {
+            startDate = FilterSharedPreferences.getStartDate(context);
+            endDate = FilterSharedPreferences.getEndDate(context);
+        }
+
+
+        favoriteFilter = FilterSharedPreferences.getFavoriteFilterSetting(context);
+
+
+        for (TripViewModel tripModel : mModels) {
+            TripEntity trip = tripModel.tripEntity;
+
+            if (dateFilter && favoriteFilter) {
+                long tripTime = trip.getTimeStamp();
+                if ((tripTime >= startDate) && (tripTime <= endDate) && trip.isFavorite()) {
+                    displayList.add(tripModel);
+                }
+            } else if (dateFilter) {
+                long tripTime = trip.getTimeStamp();
+                if ((tripTime >= startDate) && (tripTime <= endDate)) {
+                    displayList.add(tripModel);
+                }
+
+            } else if (favoriteFilter && trip.isFavorite()) {
+                displayList.add(tripModel);
+
+            }
+        }
+
+        return displayList;
+
+    }
+
+
+
+    public List<TripViewModel> getAllTrips(){
+        return mModels;
     }
 
 
